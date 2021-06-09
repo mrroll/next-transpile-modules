@@ -8,9 +8,11 @@
 
 const path = require('path');
 const process = require('process');
+const fs = require('fs');
 
 const enhancedResolve = require('enhanced-resolve');
 const escalade = require('escalade/sync');
+const semver = require('semver');
 
 // Use me when needed
 // const util = require('util');
@@ -88,7 +90,18 @@ const withTmInitializer = (modules = [], options = {}) => {
     if (modules.length === 0) return nextConfig;
 
     const resolveSymlinks = 'resolveSymlinks' in options ? options.resolveSymlinks : true;
-    const isWebpack5 = (nextConfig.future && nextConfig.future.webpack5) || false;
+    const packageJsonPath = path.resolve(CWD, 'package.json');
+    const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf-8');
+    const packageJson = JSON.parse(packageJsonContent);
+    const nextJsVersion =
+      (packageJson.dependencies && packageJson.dependencies.next) ||
+      (packageJson.devDependencies && packageJson.devDependencies.next);
+    const isWebpack5ByDefault = semver.satisfies(nextJsVersion, '^10.2.4-canary.6');
+    const isWebpack5 =
+      (isWebpack5ByDefault && nextConfig.webpack5 !== false) ||
+      (nextConfig.future && nextConfig.future.webpack5) ||
+      false;
+
     const debug = options.debug || false;
 
     const logger = createLogger(debug);
