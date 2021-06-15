@@ -96,7 +96,7 @@ const withTmInitializer = (modules = [], options = {}) => {
     const nextJsVersion =
       (packageJson.dependencies && packageJson.dependencies.next) ||
       (packageJson.devDependencies && packageJson.devDependencies.next);
-    const isWebpack5ByDefault = semver.satisfies(nextJsVersion, '^10.2.4-canary.6');
+    const isWebpack5ByDefault = semver.gte(nextJsVersion, '10.2.4-canary.6');
     const isWebpack5 =
       (isWebpack5ByDefault && nextConfig.webpack5 !== false) ||
       (nextConfig.future && nextConfig.future.webpack5) ||
